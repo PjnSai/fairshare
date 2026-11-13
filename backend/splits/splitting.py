@@ -76,3 +76,38 @@ def assign_leftover(shares: list[int], leftover: int, person_index: int) -> list
     result = list(shares)
     result[person_index] += leftover
     return result
+
+
+class AmountsDoNotMatchTotal(ValueError):
+    """The exact amounts do not add up to the bill."""
+
+    def __init__(self, total_pence: int, amounts_total: int) -> None:
+        self.difference = amounts_total - total_pence
+        if self.difference > 0:
+            detail = f"{self.difference}p too much"
+        else:
+            detail = f"{-self.difference}p short"
+        super().__init__(
+            f"amounts add up to {amounts_total}p but the bill is "
+            f"{total_pence}p ({detail})"
+        )
+
+
+def split_exact(total_pence: int, amounts: list[int]) -> list[int]:
+    """Check that exact amounts add up to the bill, and return them.
+
+    Nothing is rescaled: if the amounts do not match the total, say by how much.
+    """
+    if total_pence < 0:
+        raise ValueError("total_pence cannot be negative")
+    if not amounts:
+        raise ValueError("at least one amount is required")
+    if not all(isinstance(amount, int) for amount in amounts):
+        raise ValueError("amounts must be whole pennies")
+    if any(amount < 0 for amount in amounts):
+        raise ValueError("amounts cannot be negative")
+
+    amounts_total = sum(amounts)
+    if amounts_total != total_pence:
+        raise AmountsDoNotMatchTotal(total_pence, amounts_total)
+    return list(amounts)
