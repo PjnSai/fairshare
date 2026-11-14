@@ -1,0 +1,295 @@
+{
+  "cases": [
+    {
+      "name": "equal: divides evenly",
+      "function": "split_equally",
+      "input": { "total": 900, "count": 3 },
+      "expected": [300, 300, 300]
+    },
+    {
+      "name": "equal: leftover penny goes to the first person",
+      "function": "split_equally",
+      "input": { "total": 1000, "count": 3 },
+      "expected": [334, 333, 333]
+    },
+    {
+      "name": "equal: zero total",
+      "function": "split_equally",
+      "input": { "total": 0, "count": 4 },
+      "expected": [0, 0, 0, 0]
+    },
+    {
+      "name": "equal: one person pays everything",
+      "function": "split_equally",
+      "input": { "total": 1999, "count": 1 },
+      "expected": [1999]
+    },
+    {
+      "name": "equal: two leftover pennies among seven",
+      "function": "split_equally",
+      "input": { "total": 100, "count": 7 },
+      "expected": [15, 15, 14, 14, 14, 14, 14]
+    },
+    {
+      "name": "equal: nobody to split between",
+      "function": "split_equally",
+      "input": { "total": 100, "count": 0 },
+      "error": "invalid"
+    },
+    {
+      "name": "equal: negative total",
+      "function": "split_equally",
+      "input": { "total": -1, "count": 2 },
+      "error": "invalid"
+    },
+
+    {
+      "name": "weights: two to one",
+      "function": "split_by_weights",
+      "input": { "total": 900, "weights": [2, 1] },
+      "expected": [600, 300]
+    },
+    {
+      "name": "weights: a half and two quarters",
+      "function": "split_by_weights",
+      "input": { "total": 1000, "weights": ["1/2", "1/4", "1/4"] },
+      "expected": [500, 250, 250]
+    },
+    {
+      "name": "weights: thirds of a pound",
+      "function": "split_by_weights",
+      "input": { "total": 100, "weights": ["1/3", "1/3", "1/3"] },
+      "expected": [34, 33, 33]
+    },
+    {
+      "name": "weights: leftover goes to the largest remainder",
+      "function": "split_by_weights",
+      "input": { "total": 10, "weights": [1, 1, 2] },
+      "expected": [3, 2, 5]
+    },
+    {
+      "name": "weights: a zero weight pays nothing",
+      "function": "split_by_weights",
+      "input": { "total": 100, "weights": [1, 0, 1] },
+      "expected": [50, 0, 50]
+    },
+    {
+      "name": "weights: percentages",
+      "function": "split_by_weights",
+      "input": { "total": 1000, "weights": [60, 40] },
+      "expected": [600, 400]
+    },
+    {
+      "name": "weights: one to three",
+      "function": "split_by_weights",
+      "input": { "total": 100, "weights": [1, 2, 3] },
+      "expected": [17, 33, 50]
+    },
+    {
+      "name": "weights: all zero",
+      "function": "split_by_weights",
+      "input": { "total": 100, "weights": [0, 0] },
+      "error": "invalid"
+    },
+    {
+      "name": "weights: negative weight",
+      "function": "split_by_weights",
+      "input": { "total": 100, "weights": [1, -1] },
+      "error": "invalid"
+    },
+    {
+      "name": "weights: no weights",
+      "function": "split_by_weights",
+      "input": { "total": 100, "weights": [] },
+      "error": "invalid"
+    },
+
+    {
+      "name": "exact: amounts add up",
+      "function": "split_exact",
+      "input": { "total": 2000, "amounts": [1200, 800] },
+      "expected": [1200, 800]
+    },
+    {
+      "name": "exact: a zero amount",
+      "function": "split_exact",
+      "input": { "total": 500, "amounts": [500, 0] },
+      "expected": [500, 0]
+    },
+    {
+      "name": "exact: too little",
+      "function": "split_exact",
+      "input": { "total": 2000, "amounts": [1200, 700] },
+      "error": "mismatch",
+      "difference": -100
+    },
+    {
+      "name": "exact: too much",
+      "function": "split_exact",
+      "input": { "total": 2000, "amounts": [1200, 900] },
+      "error": "mismatch",
+      "difference": 100
+    },
+    {
+      "name": "exact: negative amount",
+      "function": "split_exact",
+      "input": { "total": 100, "amounts": [150, -50] },
+      "error": "invalid"
+    },
+    {
+      "name": "exact: half a penny",
+      "function": "split_exact",
+      "input": { "total": 100, "amounts": [50.5, 49.5] },
+      "error": "invalid"
+    },
+
+    {
+      "name": "bill: everyone on defaults",
+      "function": "split_bill",
+      "input": { "total": 1000, "people": [{}, {}, {}] },
+      "expected": [334, 333, 333]
+    },
+    {
+      "name": "bill: one fixed amount, the rest shared equally",
+      "function": "split_bill",
+      "input": {
+        "total": 2000,
+        "people": [{ "fixed": 1200, "weight": 0 }, {}, {}]
+      },
+      "expected": [1200, 400, 400]
+    },
+    {
+      "name": "bill: own items plus a shared tip",
+      "function": "split_bill",
+      "input": {
+        "total": 3300,
+        "people": [{ "fixed": 1000 }, { "fixed": 1500 }, { "fixed": 500 }]
+      },
+      "expected": [1100, 1600, 600]
+    },
+    {
+      "name": "bill: weighted shared costs",
+      "function": "split_bill",
+      "input": {
+        "total": 3400,
+        "people": [
+          { "fixed": 1000, "weight": 2 },
+          { "fixed": 1500, "weight": 1 },
+          { "fixed": 500, "weight": 1 }
+        ]
+      },
+      "expected": [1200, 1600, 600]
+    },
+    {
+      "name": "bill: one person opts out of shared costs",
+      "function": "split_bill",
+      "input": {
+        "total": 3300,
+        "people": [
+          { "fixed": 1000 },
+          { "fixed": 1500 },
+          { "fixed": 500, "weight": 0 }
+        ]
+      },
+      "expected": [1150, 1650, 500]
+    },
+    {
+      "name": "bill: leftover pennies in the shared part",
+      "function": "split_bill",
+      "input": {
+        "total": 1100,
+        "people": [{ "fixed": 100, "weight": 0 }, {}, {}, {}]
+      },
+      "expected": [100, 334, 333, 333]
+    },
+    {
+      "name": "bill: fixed amounts use up the whole bill",
+      "function": "split_bill",
+      "input": {
+        "total": 2000,
+        "people": [{ "fixed": 2000, "weight": 0 }, {}, {}]
+      },
+      "expected": [2000, 0, 0]
+    },
+    {
+      "name": "bill: fraction weights",
+      "function": "split_bill",
+      "input": {
+        "total": 1000,
+        "people": [
+          { "weight": "1/2" },
+          { "weight": "1/4" },
+          { "weight": "1/4" }
+        ]
+      },
+      "expected": [500, 250, 250]
+    },
+    {
+      "name": "bill: fixed amounts exceed the bill",
+      "function": "split_bill",
+      "input": {
+        "total": 1000,
+        "people": [
+          { "fixed": 800, "weight": 0 },
+          { "fixed": 500, "weight": 0 },
+          {}
+        ]
+      },
+      "error": "mismatch",
+      "difference": 300
+    },
+    {
+      "name": "bill: nobody agrees to pay the remainder",
+      "function": "split_bill",
+      "input": {
+        "total": 2000,
+        "people": [
+          { "fixed": 1200, "weight": 0 },
+          { "fixed": 700, "weight": 0 }
+        ]
+      },
+      "error": "mismatch",
+      "difference": -100
+    },
+    {
+      "name": "bill: negative fixed amount",
+      "function": "split_bill",
+      "input": { "total": 100, "people": [{ "fixed": -5 }, {}] },
+      "error": "invalid"
+    },
+    {
+      "name": "bill: nobody in the bill",
+      "function": "split_bill",
+      "input": { "total": 100, "people": [] },
+      "error": "invalid"
+    },
+
+    {
+      "name": "leftover: kept separate",
+      "function": "split_bill_with_leftover",
+      "input": {
+        "total": 1100,
+        "people": [{ "fixed": 100, "weight": 0 }, {}, {}, {}]
+      },
+      "expected": { "amounts": [100, 333, 333, 333], "leftover": 1 }
+    },
+    {
+      "name": "leftover: none when it divides evenly",
+      "function": "split_bill_with_leftover",
+      "input": { "total": 900, "people": [{}, {}, {}] },
+      "expected": { "amounts": [300, 300, 300], "leftover": 0 }
+    },
+    {
+      "name": "leftover: none when everyone is fixed",
+      "function": "split_bill_with_leftover",
+      "input": {
+        "total": 2000,
+        "people": [
+          { "fixed": 1200, "weight": 0 },
+          { "fixed": 800, "weight": 0 }
+        ]
+      },
+      "expected": { "amounts": [1200, 800], "leftover": 0 }
+    }
+  ]
+}

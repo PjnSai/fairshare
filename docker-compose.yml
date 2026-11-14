@@ -31,6 +31,7 @@ services:
       DB_PORT: "3306"
     volumes:
       - ./backend:/app
+      - ./shared:/shared:ro
     ports:
       - "${BACKEND_PORT:-8420}:8000"
     depends_on:
