@@ -53,7 +53,7 @@ You need **Git**, **Docker Desktop** (open and running) and **Node.js 26** (LTS)
    docker compose exec backend python manage.py migrate
    ```
 
-5. Check it works by opening http://localhost:8000/api/health. You should see `{"status": "ok"}`.
+5. Check it works by opening http://localhost:8420/api/health. You should see `{"status": "ok"}`.
 
 ### Frontend
 
@@ -70,7 +70,17 @@ You need **Git**, **Docker Desktop** (open and running) and **Node.js 26** (LTS)
    npm run dev
    ```
 
-3. Open http://localhost:3000. The frontend is not connected to the backend yet.
+3. Open http://localhost:3420. The frontend is not connected to the backend yet.
+
+## Ports
+
+| Service                       | Port |
+| ----------------------------- | ---- |
+| Backend (Django)              | 8420 |
+| Frontend (Next.js)            | 3420 |
+| MySQL (from your own machine) | 3426 |
+
+These are deliberately unusual so FairShare can run next to other projects. To change the backend or database port, set `BACKEND_PORT` or `DB_HOST_PORT` in `.env`.
 
 ## Everyday commands
 
