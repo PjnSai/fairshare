@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from fractions import Fraction
 from math import floor
 
@@ -111,3 +112,69 @@ def split_exact(total_pence: int, amounts: list[int]) -> list[int]:
     if amounts_total != total_pence:
         raise AmountsDoNotMatchTotal(total_pence, amounts_total)
     return list(amounts)
+
+
+@dataclass(frozen=True)
+class Person:
+    """What one person owes: a fixed amount, plus a share of whatever is left.
+
+    `fixed_pence` is what they owe regardless, such as their own items. `weight` is
+    their share of the rest once every fixed amount is taken out: the default of 1
+    is an equal share, and 0 means they do not share in it.
+    """
+
+    fixed_pence: int = 0
+    weight: Fraction | int = 1
+
+
+def _take_out_fixed(
+    total_pence: int, people: list[Person]
+) -> tuple[list[int], int, list[Fraction | int]]:
+    """Validate the input, then return each person's fixed amount, the pennies left
+    after all the fixed amounts, and each person's weight for sharing those pennies."""
+    if total_pence < 0:
+        raise ValueError("total_pence cannot be negative")
+    if not people:
+        raise ValueError("at least one person is required")
+    if not all(isinstance(person, Person) for person in people):
+        raise ValueError("each person must be a Person")
+
+    fixed = [person.fixed_pence for person in people]
+    if not all(isinstance(amount, int) and amount >= 0 for amount in fixed):
+        raise ValueError("fixed amounts must be whole pennies and not negative")
+    weights = [person.weight for person in people]
+    if any(Fraction(weight) < 0 for weight in weights):
+        raise ValueError("weights cannot be negative")
+
+    fixed_total = sum(fixed)
+    if fixed_total > total_pence:
+        raise AmountsDoNotMatchTotal(total_pence, fixed_total)
+    remainder = total_pence - fixed_total
+    if remainder > 0 and all(Fraction(weight) == 0 for weight in weights):
+        raise AmountsDoNotMatchTotal(total_pence, fixed_total)
+    return fixed, remainder, weights
+
+
+def split_bill(total_pence: int, people: list[Person]) -> list[int]:
+    """Split a bill where each person owes a fixed amount plus a share of the rest.
+
+    Leftover pennies in the shared part go to the largest remainders, as in
+    split_by_weights. If the amounts cannot add up to the bill, it refuses.
+    """
+    fixed, remainder, weights = _take_out_fixed(total_pence, people)
+    if remainder == 0:
+        return fixed
+    shares = split_by_weights(remainder, weights)
+    return [f + s for f, s in zip(fixed, shares, strict=True)]
+
+
+def split_bill_with_leftover(
+    total_pence: int, people: list[Person]
+) -> tuple[list[int], int]:
+    """Like split_bill, but return the leftover pennies separately so the bill's
+    creator can choose who gets them."""
+    fixed, remainder, weights = _take_out_fixed(total_pence, people)
+    if remainder == 0:
+        return fixed, 0
+    shares, leftover = split_with_leftover(remainder, weights)
+    return [f + s for f, s in zip(fixed, shares, strict=True)], leftover
